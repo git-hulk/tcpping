@@ -442,9 +442,13 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 			total_rsts++;
 		}
 
+        char buf[64];
+        int off = strftime(buf,sizeof(buf),"%Y-%m-%d %H:%M:%S.",localtime(&tv_synack.tv_sec));
+        snprintf(buf+off,sizeof(buf)-off,"%03d",(int)tv_synack.tv_usec/1000);
 		/* Raise the flag to the user that we saw it... */
-		printf("%s from %s: seq=%u ttl=%d time=%.3f%s\n", 
+		printf("%s from %s to %s: seq=%u ttl=%d time=%.3f%s\n", 
 			flags,
+			inet_ntoa(ip->ip_dst), 
 			inet_ntoa(ip->ip_src), 
 			tcpseq_to_orderseq(ntohl(tcp->th_ack) - 1),
 			ip->ip_ttl,
